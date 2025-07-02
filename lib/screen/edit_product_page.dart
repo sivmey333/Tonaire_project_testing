@@ -3,8 +3,6 @@ import 'package:product_project_testing/model/product_model.dart';
 import 'package:product_project_testing/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
-
-
 class EditProductPage extends StatefulWidget {
   final Product product;
   const EditProductPage({super.key, required this.product});
@@ -31,6 +29,7 @@ class _EditProductPageState extends State<EditProductPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ProductProvider>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Edit Product')),
       body: Padding(
@@ -39,58 +38,91 @@ class _EditProductPageState extends State<EditProductPage> {
           key: _formKey,
           child: ListView(
             children: [
+              // Product Name
               TextFormField(
                 initialValue: name,
-                decoration: const InputDecoration(labelText: 'Product Name',
-                border: OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Product Name',
+                  border: OutlineInputBorder(),
                 ),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Enter product name' : null,
                 onSaved: (v) => name = v ?? '',
               ),
-              SizedBox(height: 20,),
+              const SizedBox(height: 20),
+
+              // Price
               TextFormField(
                 initialValue: price.toString(),
-                decoration: const InputDecoration(labelText: 'Price',
-                border: OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Price',
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Enter price';
+                  if (double.tryParse(value) == null) return 'Invalid price';
+                  return null;
+                },
                 onSaved: (v) => price = double.tryParse(v ?? '0') ?? 0,
               ),
-              SizedBox(height: 20,),
+              const SizedBox(height: 20),
+
+              // Stock
               TextFormField(
                 initialValue: stock.toString(),
-                decoration: const InputDecoration(labelText: 'Stock',
-                border: OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Stock',
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Enter stock';
+                  if (int.tryParse(value) == null) return 'Invalid stock';
+                  return null;
+                },
                 onSaved: (v) => stock = int.tryParse(v ?? '0') ?? 0,
               ),
-              SizedBox(height: 20,),
+              const SizedBox(height: 20),
+
+              // Image
               TextFormField(
                 initialValue: image,
-                decoration: const InputDecoration(labelText: 'Image URL',
-                border: OutlineInputBorder(),
+                decoration: const InputDecoration(
+                  labelText: 'Image URL',
+                  border: OutlineInputBorder(),
                 ),
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Enter image URL' : null,
                 onSaved: (v) => image = v ?? '',
               ),
-              SizedBox(height: 20,),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ElevatedButton(
-                  onPressed: () async {
+              const SizedBox(height: 30),
+
+              // Save Button
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    await provider.updateProduct(Product(
-                      productId: widget.product.productId,
-                      productName: name,
-                      price: price,
-                      stock: stock,
-                      image: image,
-                    ));
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Save Changes'),
-                ),
-              )
+                    try {
+                      await provider.updateProduct(Product(
+                        productId: widget.product.productId,
+                        productName: name,
+                        price: price,
+                        stock: stock,
+                        image: image,
+                      ));
+                      print('Update successful');
+                      Navigator.pop(context);
+                    } catch (e) {
+                      print('Update failed: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Update failed: $e')),
+                      );
+                    }
+                  }
+                },
+                child: const Text('Save Changes'),
+              ),
             ],
           ),
         ),

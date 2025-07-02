@@ -19,8 +19,9 @@ class _ProductListPageState extends State<ProductListPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        Provider.of<ProductProvider>(context, listen: false).loadProducts(search: ''));
+    Future.microtask(() {
+      Provider.of<ProductProvider>(context, listen: false).loadProducts(search: '');
+    });
   }
 
   @override
@@ -33,16 +34,18 @@ class _ProductListPageState extends State<ProductListPage> {
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
 
+    // Capture provider and searchText here before async callback
+    final provider = Provider.of<ProductProvider>(context, listen: false);
+    final searchText = _searchController.text.trim();
+
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      final provider = Provider.of<ProductProvider>(context, listen: false);
-      provider.loadProducts(search: _searchController.text.trim());
+      if (!mounted) return; // Check if widget is still mounted
+      provider.loadProducts(search: searchText);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ProductProvider>(context, listen: false);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Product List'),
@@ -66,7 +69,10 @@ class _ProductListPageState extends State<ProductListPage> {
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: () => provider.loadProducts(search: _searchController.text.trim()),
+        onRefresh: () {
+          return Provider.of<ProductProvider>(context, listen: false)
+              .loadProducts(search: _searchController.text.trim());
+        },
         child: Consumer<ProductProvider>(
           builder: (context, provider, _) {
             if (provider.isLoading) {
@@ -99,13 +105,17 @@ class _ProductListPageState extends State<ProductListPage> {
                       IconButton(
                         icon: const Icon(Icons.edit),
                         color: Colors.green,
-                        onPressed: () {
-                          Navigator.push(
+                        onPressed: () async {
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) => EditProductPage(product: product),
                             ),
                           );
+                          // Reload product list after edit
+                          if (!mounted) return;
+                          await Provider.of<ProductProvider>(context, listen: false)
+                              .loadProducts(search: _searchController.text.trim());
                         },
                       ),
                       IconButton(
@@ -116,8 +126,7 @@ class _ProductListPageState extends State<ProductListPage> {
                             context: context,
                             builder: (_) => AlertDialog(
                               title: const Text('Confirm Delete'),
-                              content:
-                                  const Text('Are you sure you want to delete?'),
+                              content: const Text('Are you sure you want to delete?'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
@@ -125,7 +134,9 @@ class _ProductListPageState extends State<ProductListPage> {
                                 ),
                                 TextButton(
                                   onPressed: () async {
-                                    await provider.deleteProduct(product.productId);
+                                    await Provider.of<ProductProvider>(context,
+                                            listen: false)
+                                        .deleteProduct(product.productId);
                                     Navigator.pop(context);
                                   },
                                   child: const Text('Delete'),
@@ -149,7 +160,9 @@ class _ProductListPageState extends State<ProductListPage> {
         onPressed: () async {
           await Navigator.push(
               context, MaterialPageRoute(builder: (_) => const AddProductPage()));
-          await provider.loadProducts(search: _searchController.text.trim());
+          if (!mounted) return;
+          await Provider.of<ProductProvider>(context, listen: false)
+              .loadProducts(search: _searchController.text.trim());
         },
         child: const Icon(Icons.add),
       ),

@@ -73,9 +73,11 @@ class ProductProvider extends ChangeNotifier {
   }
 
   Future<void> updateProduct(Product product) async {
-    await ApiService.updateProduct(product);
+
+    await ApiService.updateProduct(product); 
     await loadProducts();
   }
+
 
   Future<void> deleteProduct(int id) async {
     await ApiService.deleteProduct(id);

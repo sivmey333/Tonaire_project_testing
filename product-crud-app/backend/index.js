@@ -135,15 +135,24 @@ app.post('/products', (req, res) => {
 // PUT
 app.put('/products/:id', (req, res) => {
   const { productName, price, stock, image } = req.body;
+  const { id } = req.params;
+
+  console.log('Update request:', { id, productName, price, stock, image });
+
   db.query(
     'UPDATE products SET productName=?, price=?, stock=?, image=? WHERE productId=?',
-    [productName, price, stock, image, req.params.id],
-    (err) => {
-      if (err) return res.status(500).json({ error: err.message });
+    [productName, price, stock, image, id],
+    (err, result) => {
+      if (err) {
+        console.error('SQL error:', err.message);
+        return res.status(500).json({ error: err.message });
+      }
+      console.log('Update result:', result); // log affectedRows, etc.
       res.sendStatus(204);
     }
   );
 });
+
 
 // DELETE
 app.delete('/products/:id', (req, res) => {
