@@ -100,6 +100,15 @@ class _EditProductPageState extends State<EditProductPage> {
 
               // Save Button
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
@@ -121,7 +130,7 @@ class _EditProductPageState extends State<EditProductPage> {
                     }
                   }
                 },
-                child: const Text('Save Changes'),
+                child: const Text('Update'),
               ),
             ],
           ),

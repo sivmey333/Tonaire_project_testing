@@ -28,26 +28,46 @@ class _AddProductPageState extends State<AddProductPage> {
           child: ListView(
             children: [
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Product Name'),
+                decoration: const InputDecoration(labelText: 'Product Name',
+                border: OutlineInputBorder(),
+                ),
                 onSaved: (v) => name = v ?? '',
                 validator: (v) => v!.isEmpty ? 'Enter name' : null,
               ),
+              SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Price'),
+                decoration: const InputDecoration(labelText: 'Price',
+                border: OutlineInputBorder(),
+                ),
                 keyboardType: TextInputType.number,
                 onSaved: (v) => price = double.tryParse(v ?? '0') ?? 0,
               ),
+              SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Stock'),
+                decoration: const InputDecoration(labelText: 'Stock',
+                border: OutlineInputBorder(),
+                ),
                 keyboardType: TextInputType.number,
                 onSaved: (v) => stock = int.tryParse(v ?? '0') ?? 0,
               ),
+              SizedBox(height: 20),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Image URL'),
+                decoration: const InputDecoration(labelText: 'Image URL',
+                border: OutlineInputBorder(),
+                ),
                 onSaved: (v) => image = v ?? '',
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
