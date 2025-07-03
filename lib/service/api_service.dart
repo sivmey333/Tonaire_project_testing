@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:product_project_testing/model/product_model.dart';
 
-const String baseUrl = 'http://192.168.3.187:3000/products';
+const String baseUrl = 'http://10.111.15.239:3000/products';
 
 class ApiService {
   static Future<List<Product>> fetchProducts({String search = ''}) async {

@@ -7,7 +7,7 @@ This is a full-stack product crud app built with:
 - 🌐 **Express.js** for the RESTful API backend
 - 🛢️ **MySQL** as the database (I used macbook. so, it's difficult to use with SQL server. And then, I decided use MySQL as Database)
 - **Running** run with IOS simulator using my mac ip
-- **Api Url**('http://my_mac_ip:3000/products')
+- **Api Url**('http://your_mac_ip:3000/products')
 - # in database I add 1 more column by myself
 
 ## 🗂️ Project Structure
