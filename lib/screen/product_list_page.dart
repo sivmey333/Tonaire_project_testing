@@ -23,7 +23,9 @@ class _ProductListPageState extends State<ProductListPage> {
     super.didChangeDependencies();
     if (_isFirstLoad) {
       productProvider = Provider.of<ProductProvider>(context, listen: false);
-      productProvider.loadProducts(search: '');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        productProvider.loadProducts(search: '');
+      });
       _isFirstLoad = false;
     }
   }
